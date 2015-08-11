@@ -1,0 +1,32 @@
+# Visual studio #
+###################
+**/obj/**
+**/bin/**
+**/ipch/**
+**/Debug*/**
+**/Release*/**
+**/Editor Debug/**
+**/Editor Release/**
+*.csproj.*
+*.suo
+*.sdf
+*.opensdf
+*.ncb
+
+# Compiled source #
+###################
+*.com
+*.class
+*.obj
+*.o
+*.so
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
