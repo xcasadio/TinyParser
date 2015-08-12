@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 
-namespace LightParser
+namespace TinyParser
 {
 	enum CalculatorTokenType
 	{
@@ -33,7 +33,7 @@ namespace LightParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public LightParser.Calculator Calculator
+		public TinyParser.Calculator Calculator
 		{
 			get { return m_Calculator; }
 		}

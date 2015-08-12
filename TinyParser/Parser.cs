@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 
-namespace LightParser
+namespace TinyParser
 {
 	/// <summary>
     /// Recognized operators : 
@@ -34,7 +34,7 @@ namespace LightParser
 		/// <summary>
 		/// 
 		/// </summary>
-		internal LightParser.Calculator Calculator
+		internal TinyParser.Calculator Calculator
 		{
 			get { return m_Calculator; }
 		}

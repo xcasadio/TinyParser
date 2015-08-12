@@ -5,21 +5,39 @@ using System.Text;
 using System.Xml;
 using System.IO;
 
-namespace LightParser
+namespace TinyParser
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	class CalculatorTokenKeyword
+	class CalculatorTokenSequence
 		: ICalculatorToken
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public enum TokenSequence
+		{
+			Sequence,
+			StartSequence,
+			EndSequence
+		}
+
 		#region Fields
 
-		string m_Keyword;
+		TokenSequence m_Sequence;
 
         #endregion
 
         #region Properties
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public TokenSequence Sequence
+		{
+			get { return m_Sequence; }
+		}
 
         #endregion
 
@@ -28,34 +46,12 @@ namespace LightParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="keyword_"></param>
-		public CalculatorTokenKeyword(Calculator calculator_, string keyword_)
+		/// <param name="sequence_"></param>
+		public CalculatorTokenSequence(Calculator calculator_, TokenSequence sequence_)
 			: base(calculator_)
 		{
-			m_Keyword = keyword_;
+			m_Sequence = sequence_;
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public CalculatorTokenKeyword(Calculator calculator_, XmlNode el_, SaveOption option_)
-			: base(calculator_)
-		{
-			Load(el_, option_);
-		}
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public CalculatorTokenKeyword(Calculator calculator_, BinaryReader br_, SaveOption option_)
-            : base(calculator_)
-        {
-            Load(br_, option_);
-        }
 
         #endregion
 
@@ -67,7 +63,7 @@ namespace LightParser
 		/// <returns></returns>
 		public override float Evaluate()
 		{
-			return this.Calculator.Parser.EvaluateKeyword(m_Keyword);
+			throw new InvalidOperationException("Don't use to evaluate");
 		}
 
 		#region Save / Load
@@ -79,11 +75,7 @@ namespace LightParser
 		/// <param name="option_"></param>
 		public override void Save(XmlNode el_, SaveOption option_)
 		{
-			XmlNode node = (XmlNode)el_.OwnerDocument.CreateElement("Node");
-			el_.AppendChild(node);
-			el_.OwnerDocument.AddAttribute(node, "type", ((int)CalculatorTokenType.Keyword).ToString());
-			XmlNode valueNode = el_.OwnerDocument.CreateNodeWithText("Keyword", m_Keyword);
-			node.AppendChild(valueNode);
+			throw new InvalidOperationException("Can't save this object. It is a temporary object");
 		}
 
 		/// <summary>
@@ -93,7 +85,7 @@ namespace LightParser
 		/// <param name="option_"></param>
 		public override void Load(XmlNode el_, SaveOption option_)
 		{
-			m_Keyword = el_.SelectSingleNode("Keyword").InnerText;
+            throw new InvalidOperationException("Can't save this object. It is a temporary objecte");
 		}
 
         /// <summary>
@@ -103,8 +95,7 @@ namespace LightParser
         /// <param name="option_"></param>
         public override void Save(BinaryWriter bw_, SaveOption option_)
         {
-            bw_.Write((int)CalculatorTokenType.Keyword);
-            bw_.Write(m_Keyword);
+            throw new InvalidOperationException("Can't save this object. It is a temporary object");
         }
 
         /// <summary>
@@ -114,8 +105,7 @@ namespace LightParser
         /// <param name="option_"></param>
         public override void Load(BinaryReader br_, SaveOption option_)
         {
-            br_.ReadInt32();
-            m_Keyword = br_.ReadString();
+            throw new InvalidOperationException("Can't save this object. It is a temporary object");
         }
 
 		#endregion

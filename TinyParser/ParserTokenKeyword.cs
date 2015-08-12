@@ -3,30 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LightParser
+namespace TinyParser
 {
-	class ParserTokenVariable
+	/// <summary>
+	/// 
+	/// </summary>
+	class ParserTokenKeyword
 		: ParserToken
 	{
 		#region Fields
-        
-        #endregion
 
-        #region Properties
+		#endregion
 
-        #endregion
+		#region Properties
 
-        #region Constructors
+		#endregion
+
+		#region Constructors
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="parser_"></param>
-		public ParserTokenVariable(AbstractParser parser_)
-			: base(parser_, string.Empty)
-		{
-
-		}
+		/// <param name="token_"></param>
+		public ParserTokenKeyword(AbstractParser parser_, string token_)
+			: base(parser_, token_)
+		{}
 
         #endregion
 
@@ -39,21 +41,13 @@ namespace LightParser
 		/// <returns></returns>
 		public override bool Check(string sentence_)
 		{
-			if (string.IsNullOrEmpty(sentence_) == true)
+			if (m_Token.Equals(sentence_) == true)
 			{
+				Parser.AddCalculator(new CalculatorTokenKeyword(Parser.Calculator, m_Token));
 				return true;
 			}
 
-			int c = (int)sentence_.ToCharArray(0, 1)[0];
-
-			if (c >= (int)'0' || c <= (int)'9')
-			{
-				return false;
-			}
-
-			m_Token = sentence_;
-
-			return true;
+			return false;
 		}
 
         #endregion

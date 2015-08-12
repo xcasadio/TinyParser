@@ -8,8 +8,8 @@
     <ProjectGuid>{6A9C56D3-A8A8-428A-8A01-D8421EEE2B0C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LightParser</RootNamespace>
-    <AssemblyName>LightParser</AssemblyName>
+    <RootNamespace>TinyParser</RootNamespace>
+    <AssemblyName>TinyParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

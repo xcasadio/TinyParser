@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LightParser
+namespace TinyParser
 {
     /// <summary>
     /// Mother for all token than the Parser can identify

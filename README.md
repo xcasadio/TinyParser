@@ -1,3 +1,3 @@
-# LightParser
-A light parser in C#
+# TinyParser
+A tiny parser developed in C#
 

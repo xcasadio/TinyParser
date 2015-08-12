@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LightParser
+namespace TinyParser
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	class ParserTokenSequence
+	class ParserTokenBinaryOperator
 		: ParserToken
 	{
 		#region Fields
-
-		static public readonly string sequence = "`";
 
         #endregion
 
@@ -27,8 +25,9 @@ namespace LightParser
 		/// 
 		/// </summary>
 		/// <param name="parser_"></param>
-		public ParserTokenSequence(AbstractParser parser_)
-			: base(parser_, sequence)
+		/// <param name="token_"></param>
+		public ParserTokenBinaryOperator(AbstractParser parser_, string token_)
+			: base(parser_, token_)
 		{
 
 		}
@@ -44,10 +43,17 @@ namespace LightParser
 		/// <returns></returns>
 		public override bool Check(string sentence_)
 		{
-			if (m_Token.Equals(sentence_) == true)
+			int index = sentence_.IndexOf(m_Token);
+
+			if (index != -1)
 			{
-				Parser.AddCalculator(new CalculatorTokenSequence(Parser.Calculator, CalculatorTokenSequence.TokenSequence.Sequence));
-				return true;
+				Parser.AddCalculator(Parser.GetCalculatorByBinaryOperator(m_Token));
+
+				string s1, s2;
+				s1 = sentence_.Substring(0, index);
+				s2 = sentence_.Substring(index + m_Token.Length, sentence_.Length - index - m_Token.Length);
+
+				return Parser.Check(s1) && Parser.Check(s2);
 			}
 
 			return false;

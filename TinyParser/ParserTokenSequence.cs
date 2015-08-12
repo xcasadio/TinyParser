@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LightParser
+namespace TinyParser
 {
-	class ParserTokenValue
+	/// <summary>
+	/// 
+	/// </summary>
+	class ParserTokenSequence
 		: ParserToken
 	{
 		#region Fields
 
-		float m_Value;
+		static public readonly string sequence = "`";
 
         #endregion
 
@@ -24,8 +27,8 @@ namespace LightParser
 		/// 
 		/// </summary>
 		/// <param name="parser_"></param>
-		public ParserTokenValue(AbstractParser parser_)
-			: base(parser_, string.Empty)
+		public ParserTokenSequence(AbstractParser parser_)
+			: base(parser_, sequence)
 		{
 
 		}
@@ -41,26 +44,13 @@ namespace LightParser
 		/// <returns></returns>
 		public override bool Check(string sentence_)
 		{
-            //int value;
-
-			if (string.IsNullOrEmpty(sentence_) == true)
+			if (m_Token.Equals(sentence_) == true)
 			{
-				return false;
+				Parser.AddCalculator(new CalculatorTokenSequence(Parser.Calculator, CalculatorTokenSequence.TokenSequence.Sequence));
+				return true;
 			}
 
-			if (float.TryParse(sentence_, out m_Value) == true)
-			{
-				Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, m_Value));
-			}
-            else
-			{
-				Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, sentence_));
-			}
-
-			m_Token = sentence_;
-			
-
-			return true;
+			return false;
 		}
 
         #endregion

@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 
-namespace LightParser
+namespace TinyParser
 {
 	/// <summary>
 	/// 
@@ -33,7 +33,7 @@ namespace LightParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public LightParser.AbstractParser Parser
+		public TinyParser.AbstractParser Parser
 		{
 			get { return m_Parser; }
 		}

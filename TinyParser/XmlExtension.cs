@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Globalization;
 
-namespace LightParser
+namespace TinyParser
 {
 	/// <summary>
 	/// 

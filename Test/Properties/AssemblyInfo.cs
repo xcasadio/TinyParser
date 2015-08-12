@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Les informations générales relatives à un assembly dépendent de 
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
-[assembly: AssemblyTitle("LightParser")]
-[assembly: AssemblyDescription("a light parser created by Xavier Casadio")]
+[assembly: AssemblyTitle("Ttest")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Xavier Casadio")]
-[assembly: AssemblyProduct("LightParser")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Ttest")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Le GUID suivant est pour l'ID de la typelib si ce projet est exposé à COM
-[assembly: Guid("c431ce0d-a808-4c69-8671-0bf561fdb244")]
+[assembly: Guid("524f037d-d9f7-47e2-ad5b-0451b756df47")]
 
 // Les informations de version pour un assembly se composent des quatre valeurs suivantes :
 //
