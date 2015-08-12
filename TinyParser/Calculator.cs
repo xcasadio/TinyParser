@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +17,7 @@ namespace TinyParser
 		#region Fields
 
 		ICalculatorToken m_Root;
-        AbstractParser m_Parser;
+        Parser m_Parser;
 		
         #endregion
 
@@ -33,7 +35,7 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public TinyParser.AbstractParser Parser
+		public TinyParser.Parser Parser
 		{
 			get { return m_Parser; }
 		}
@@ -46,7 +48,7 @@ namespace TinyParser
 		/// 
 		/// </summary>
 		/// <param name="parser_"></param>
-		public Calculator(AbstractParser parser_)
+		public Calculator(Parser parser_)
 		{
 			m_Parser = parser_;
 		}

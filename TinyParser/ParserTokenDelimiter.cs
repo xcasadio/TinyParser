@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +28,7 @@ namespace TinyParser
 		/// <param name="parser_"></param>
 		/// <param name="open_"></param>
 		/// <param name="close_"></param>
-		public ParserTokenDelimiter(AbstractParser parser_, string open_, string close_)
+		public ParserTokenDelimiter(Parser parser_, string open_, string close_)
 			: base(parser_, open_)
 		{
 			m_Close = close_;

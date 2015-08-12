@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

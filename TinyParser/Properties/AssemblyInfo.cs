@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,7 +8,7 @@ using System.Runtime.InteropServices;
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
 [assembly: AssemblyTitle("TinyParser")]
-[assembly: AssemblyDescription("a tiny parser developed by Xavier Casadio")]
+[assembly: AssemblyDescription("a tiny parser developed by Xavier Casadio. Licensed under the MIT license.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Xavier Casadio")]
 [assembly: AssemblyProduct("TinyParser")]

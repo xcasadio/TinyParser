@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +15,7 @@ namespace TinyParser
 		#region Fields
 
 		protected string m_Token = string.Empty;
-		AbstractParser m_Parser;
+		Parser m_Parser;
 
         #endregion
 
@@ -22,7 +24,7 @@ namespace TinyParser
 		/// <summary>
 		/// Gets
 		/// </summary>
-		protected AbstractParser Parser
+		protected Parser Parser
 		{
 			get { return m_Parser; }
 		}
@@ -36,7 +38,7 @@ namespace TinyParser
 		/// </summary>
 		/// <param name="parser_"></param>
 		/// <param name="token_"></param>
-		protected ParserToken(AbstractParser parser_, string token_)
+		protected ParserToken(Parser parser_, string token_)
 		{
 			parser_.AddToken(token_);
 

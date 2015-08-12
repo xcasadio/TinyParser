@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +29,7 @@ namespace TinyParser
 		/// 
 		/// </summary>
 		/// <param name="parser_"></param>
-		public ParserTokenSequence(AbstractParser parser_)
+		public ParserTokenSequence(Parser parser_)
 			: base(parser_, sequence)
 		{
 

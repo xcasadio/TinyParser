@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +12,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            ParserConcrete parser = new ParserConcrete();
+            Parser parser = new Parser(EvaluateKeyword, EvaluateFunction);
             parser.AddFunctionToken("command");
             parser.AddKeywordToken("ctrl");
 
@@ -47,9 +49,38 @@ namespace Test
         /// </summary>
         /// <param name="parser_"></param>
         /// <param name="s_"></param>
-        static private void Evaluate(AbstractParser parser_, string s_)
+        static private void Evaluate(Parser parser_, string s_)
         {
             Console.WriteLine("{0} : {1}", s_, parser_.Evaluate(s_));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword_"></param>
+        /// <returns></returns>
+        static float EvaluateKeyword(string keyword_)
+        {
+            return keyword_.Equals("command") == true ? 1.0f : 0.0f;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="functionName_"></param>
+        /// <param name="args_"></param>
+        /// <returns></returns>
+        static float EvaluateFunction(string functionName_, string[] args_)
+        {
+            if (functionName_.Equals("command"))
+            {
+                if (args_[0].Equals("PunchLight"))
+                {
+                    return 1;
+                }
+            }
+
+            return 0.0f;
         }
     }
 }

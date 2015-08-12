@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT license. See LICENSE file.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,12 +16,21 @@ namespace TinyParser
     /// Can support functions, format : function_name="arg1, arg2, ..."
     /// Can support keyword
 	/// </summary>
-	public abstract class AbstractParser
-	{
-		#region Fields
+	public class Parser
+    {
+        #region Delegate
 
-		Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator> m_MapBinaryOperator = new Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator>();
+        public delegate float EvaluateKeywordDelegate(string keyword_);
+        public delegate float EvaluateFunctionDelegate(string function_, string[] args_);
 
+        #endregion // Delegate
+
+        #region Fields
+
+        EvaluateKeywordDelegate m_KeywordDelegate;
+        EvaluateFunctionDelegate m_FunctionDelegate;
+
+        Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator> m_MapBinaryOperator = new Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator>();
 		Dictionary<int, List<ParserToken>> m_Tokens = new Dictionary<int, List<ParserToken>>();
 
 		List<ICalculatorToken> m_CalculatorList = new List<ICalculatorToken>();
@@ -54,8 +65,21 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public AbstractParser()
+        public Parser(EvaluateKeywordDelegate keywordDelegate_, EvaluateFunctionDelegate functionDelegate_)
 		{
+            if (keywordDelegate_ == null)
+            {
+                throw new ArgumentNullException("The EvaluateKeywordDelegate is null");
+            }
+
+            if (functionDelegate_ == null)
+            {
+                throw new ArgumentNullException("The EvaluateFunctionDelegate is null");
+            }
+
+            m_KeywordDelegate = keywordDelegate_;
+            m_FunctionDelegate = functionDelegate_;
+
 			m_MapBinaryOperator.Add("+", CalculatorTokenBinaryOperator.BinaryOperator.Plus);
 			m_MapBinaryOperator.Add("-", CalculatorTokenBinaryOperator.BinaryOperator.Minus);
 			m_MapBinaryOperator.Add("/", CalculatorTokenBinaryOperator.BinaryOperator.Divide);
@@ -145,7 +169,7 @@ namespace TinyParser
 				return false;
 			}
 
-			//trie le dictionnaire par priorité
+			//sort the dictionary by priority
 			m_Tokens = m_Tokens.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
 			foreach (KeyValuePair<int, List<ParserToken>> pair in m_Tokens)
@@ -220,7 +244,10 @@ namespace TinyParser
 		/// </summary>
 		/// <param name="keyword_"></param>
 		/// <returns></returns>
-		public abstract float EvaluateKeyword(string keyword_);
+        public float EvaluateKeyword(string keyword_)
+        {
+            return m_KeywordDelegate(keyword_);
+        }
 
 		/// <summary>
 		/// 
@@ -228,7 +255,10 @@ namespace TinyParser
 		/// <param name="functionName_"></param>
 		/// <param name="args_"></param>
 		/// <returns></returns>
-		public abstract float EvaluateFunction(string functionName_, string[] args_);
+        public float EvaluateFunction(string functionName_, string[] args_)
+        {
+            return m_FunctionDelegate(functionName_, args_);
+        }
 
 		#region Compile
 
