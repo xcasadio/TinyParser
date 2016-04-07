@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{6F507A83-6150-4700-BDAF-B700A3A70723}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyParser", "TinyParser\TinyParser.csproj", "{6A9C56D3-A8A8-428A-8A01-D8421EEE2B0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyParserTest", "TinyParserTest\TinyParserTest.csproj", "{F9BBCADA-0CAC-4453-9C3B-85B9C6348CBA}"
@@ -19,16 +17,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Debug|x86.ActiveCfg = Debug|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Debug|x86.Build.0 = Debug|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Release|Any CPU.ActiveCfg = Release|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Release|Mixed Platforms.Build.0 = Release|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Release|x86.ActiveCfg = Release|x86
-		{6F507A83-6150-4700-BDAF-B700A3A70723}.Release|x86.Build.0 = Release|x86
 		{6A9C56D3-A8A8-428A-8A01-D8421EEE2B0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A9C56D3-A8A8-428A-8A01-D8421EEE2B0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A9C56D3-A8A8-428A-8A01-D8421EEE2B0C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
