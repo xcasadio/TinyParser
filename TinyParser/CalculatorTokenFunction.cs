@@ -1,24 +1,21 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
 namespace TinyParser
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	class CalculatorTokenFunction
-		: ICalculatorToken
+    /// <summary>
+    /// 
+    /// </summary>
+    class CalculatorTokenFunction
+		: CalculatorToken
 	{
 		#region Fields
 
-		string m_FunctionName;
-		string[] m_Args;
+		string _functionName;
+		string[] _args;
 
         #endregion
 
@@ -31,36 +28,37 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="calculator_"></param>
-		/// <param name="functionName_"></param>
-		/// <param name="args_"></param>
-		public CalculatorTokenFunction(Calculator calculator_, string functionName_, string[] args_)
-			: base(calculator_)
+		/// <param name="calculator"></param>
+		/// <param name="functionName"></param>
+		/// <param name="args"></param>
+		public CalculatorTokenFunction(Calculator calculator, string functionName, string[] args)
+			: base(calculator)
 		{
-			m_FunctionName = functionName_;
-			m_Args = args_;
+			_functionName = functionName;
+			_args = args;
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public CalculatorTokenFunction(Calculator calculator_, XmlNode el_, SaveOption option_)
-			: base(calculator_)
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+		public CalculatorTokenFunction(Calculator calculator, XmlNode el, SaveOption option)
+			: base(calculator)
 		{
-			Load(el_, option_);
+			Load(el, option);
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="br_"></param>
-        /// <param name="option_"></param>
-        public CalculatorTokenFunction(Calculator calculator_, BinaryReader br_, SaveOption option_)
-            : base(calculator_)
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public CalculatorTokenFunction(Calculator calculator, BinaryReader br, SaveOption option)
+            : base(calculator)
         {
-            Load(br_, option_);
+            Load(br, option);
         }
 
         #endregion
@@ -73,7 +71,7 @@ namespace TinyParser
 		/// <returns></returns>
 		public override float Evaluate()
 		{
-			return Calculator.Parser.EvaluateFunction(m_FunctionName, m_Args);
+			return Calculator.Parser.EvaluateFunction(_functionName, _args);
 		}
 
 		#region Save / Load
@@ -81,22 +79,22 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Save(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Save(XmlNode el, SaveOption option)
 		{
-			XmlNode node = (XmlNode)el_.OwnerDocument.CreateElement("Node");
-			el_.AppendChild(node);
-			el_.OwnerDocument.AddAttribute(node, "type", ((int)CalculatorTokenType.Function).ToString());
-			XmlNode valueNode = (XmlNode)el_.OwnerDocument.CreateNodeWithText("FunctionName", m_FunctionName);
+			XmlNode node = el.OwnerDocument.CreateElement("Node");
+			el.AppendChild(node);
+            node.AddAttribute("type", ((int)CalculatorTokenType.Function).ToString());
+			XmlNode valueNode = el.OwnerDocument.CreateElementWithText("FunctionName", _functionName);
 			node.AppendChild(valueNode);
 
-			XmlNode argNode = (XmlNode)el_.OwnerDocument.CreateElement("ArgumentList");
+			XmlNode argNode = el.OwnerDocument.CreateElement("ArgumentList");
 			node.AppendChild(argNode);
 
-			foreach (string a in m_Args)
+			foreach (string a in _args)
 			{
-				valueNode = (XmlNode)el_.OwnerDocument.CreateNodeWithText("Argument", a);
+				valueNode = el.OwnerDocument.CreateElementWithText("Argument", a);
 				argNode.AppendChild(valueNode);
 			}
 		}
@@ -104,53 +102,46 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Load(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Load(XmlNode el, SaveOption option)
 		{
-			m_FunctionName = el_.SelectSingleNode("FunctionName").InnerText;
-			List<string> args = new List<string>();
-
-			foreach (XmlNode n in el_.SelectNodes("ArgumentList/Argument"))
-			{
-				args.Add(n.InnerText);
-			}
-
-			m_Args = args.ToArray();
+			_functionName = el.SelectSingleNode("FunctionName").InnerText;
+		    _args = (from XmlNode n in el.SelectNodes("ArgumentList/Argument") select n.InnerText).ToArray();
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Save(BinaryWriter bw_, SaveOption option_)
+        /// <param name="bw"></param>
+        /// <param name="option"></param>
+        public override void Save(BinaryWriter bw, SaveOption option)
         {
-            bw_.Write((int)CalculatorTokenType.Function);
-            bw_.Write(m_FunctionName);
-            bw_.Write(m_Args.Length);
+            bw.Write((int)CalculatorTokenType.Function);
+            bw.Write(_functionName);
+            bw.Write(_args.Length);
 
-            foreach (string a in m_Args)
+            foreach (string a in _args)
             {
-                bw_.Write(a);
+                bw.Write(a);
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Load(BinaryReader br_, SaveOption option_)
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public override void Load(BinaryReader br, SaveOption option)
         {
-            br_.ReadInt32();
-            m_FunctionName = br_.ReadString();
-            int count = br_.ReadInt32();
-            m_Args = new string[count];
+            br.ReadInt32();
+            _functionName = br.ReadString();
+            int count = br.ReadInt32();
+            _args = new string[count];
 
             for (int i=0; i<count; i++)
             {
-                m_Args[i] = br_.ReadString();
+                _args[i] = br.ReadString();
             }
         }
 

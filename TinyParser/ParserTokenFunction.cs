@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TinyParser
 {
@@ -26,10 +24,10 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		/// <param name="token_"></param>
-		public ParserTokenFunction(Parser parser_, string token_)
-			: base(parser_, token_)
+		/// <param name="parser"></param>
+		/// <param name="token"></param>
+		public ParserTokenFunction(Parser parser, string token)
+			: base(parser, token)
 		{}
 
         #endregion
@@ -39,33 +37,25 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="sentence_"></param>
+		/// <param name="sentence"></param>
 		/// <returns></returns>
-		public override bool Check(string sentence_)
+		public override bool Check(string sentence)
 		{
-			if (sentence_.StartsWith(m_Token) == true)
+			if (sentence.StartsWith(Token) == true)
 			{
 				List<string> args = new List<string>();
-				string str = sentence_.Replace(m_Token + "=", "");
-				string s2 = string.Empty;
+				string str = sentence.Replace(Token + "=", "");
 
-				if (str.StartsWith("\"") == true)
+			    if (str.StartsWith("\"") == true)
 				{
 					str = str.Substring(1);
 
-					int index = str.IndexOf("\"");
+					int index = str.IndexOf("\"", StringComparison.Ordinal);
 
 					if (index != -1)
 					{
 						string argument = str.Substring(0, index);
-						string[] a = argument.Split(',');
-
-						s2 = str.Substring(index + 1, str.Length - index - 1);
-
-						foreach(string s in a)
-						{
-							args.Add(s);
-						}
+                        args.AddRange(argument.Split(','));
 					}
 					else
 					{
@@ -74,16 +64,7 @@ namespace TinyParser
 					}
 				}
 
-				Parser.AddCalculator(new CalculatorTokenFunction(Parser.Calculator, m_Token, args.ToArray()));
-
-				/*if (string.IsNullOrEmpty(s2) == false)
-				{
-					return Parser.Check(s2);
-				}
-				else
-				{
-					return true;
-				}*/
+				Parser.AddCalculator(new CalculatorTokenFunction(Parser.Calculator, Token, args.ToArray()));
 
 				return true;
 			}

@@ -1,10 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace TinyParser
 {
     /// <summary>
@@ -14,8 +9,7 @@ namespace TinyParser
 	{
 		#region Fields
 
-		protected string m_Token = string.Empty;
-		Parser m_Parser;
+		protected string Token;
 
         #endregion
 
@@ -24,10 +18,7 @@ namespace TinyParser
 		/// <summary>
 		/// Gets
 		/// </summary>
-		protected Parser Parser
-		{
-			get { return m_Parser; }
-		}
+		protected Parser Parser { get; }
 
         #endregion
 
@@ -36,26 +27,26 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		/// <param name="token_"></param>
-		protected ParserToken(Parser parser_, string token_)
+		/// <param name="parser"></param>
+		/// <param name="token"></param>
+		protected ParserToken(Parser parser, string token)
 		{
-			parser_.AddToken(token_);
+			Token = token;
+			Parser = parser;
 
-			m_Token = token_;
-			m_Parser = parser_;
-		}
+            parser.AddToken(token);
+        }
 
         #endregion
 
         #region Methods
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sentence_"></param>
-		/// <returns></returns>
-		public abstract bool Check(string sentence_);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <returns></returns>
+        public abstract bool Check(string sentence);
 
         #endregion
 	}

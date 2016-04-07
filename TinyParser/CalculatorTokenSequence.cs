@@ -1,9 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -13,7 +10,7 @@ namespace TinyParser
 	/// 
 	/// </summary>
 	class CalculatorTokenSequence
-		: ICalculatorToken
+		: CalculatorToken
 	{
 		/// <summary>
 		/// 
@@ -27,32 +24,28 @@ namespace TinyParser
 
 		#region Fields
 
-		TokenSequence m_Sequence;
-
-        #endregion
+	    #endregion
 
         #region Properties
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public TokenSequence Sequence
-		{
-			get { return m_Sequence; }
-		}
+		public TokenSequence Sequence { get; }
 
-        #endregion
+	    #endregion
 
         #region Constructors
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sequence_"></param>
-		public CalculatorTokenSequence(Calculator calculator_, TokenSequence sequence_)
-			: base(calculator_)
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="sequence"></param>
+		public CalculatorTokenSequence(Calculator calculator, TokenSequence sequence)
+			: base(calculator)
 		{
-			m_Sequence = sequence_;
+			Sequence = sequence;
 		}
 
         #endregion
@@ -73,9 +66,9 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Save(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Save(XmlNode el, SaveOption option)
 		{
 			throw new InvalidOperationException("Can't save this object. It is a temporary object");
 		}
@@ -83,9 +76,9 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Load(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Load(XmlNode el, SaveOption option)
 		{
             throw new InvalidOperationException("Can't save this object. It is a temporary objecte");
 		}
@@ -93,9 +86,9 @@ namespace TinyParser
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Save(BinaryWriter bw_, SaveOption option_)
+        /// <param name="bw"></param>
+        /// <param name="option"></param>
+        public override void Save(BinaryWriter bw, SaveOption option)
         {
             throw new InvalidOperationException("Can't save this object. It is a temporary object");
         }
@@ -104,8 +97,8 @@ namespace TinyParser
         /// 
         /// </summary>
         /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Load(BinaryReader br_, SaveOption option_)
+        /// <param name="option"></param>
+        public override void Load(BinaryReader br, SaveOption option)
         {
             throw new InvalidOperationException("Can't save this object. It is a temporary object");
         }

@@ -1,9 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -13,7 +10,7 @@ namespace TinyParser
 	/// 
 	/// </summary>
 	class CalculatorTokenBinaryOperator
-		: ICalculatorToken
+		: CalculatorToken
 	{
 		/// <summary>
 		/// 
@@ -37,9 +34,9 @@ namespace TinyParser
 
 		#region Fields
 
-		BinaryOperator m_Operator;
-		ICalculatorToken m_Left;		
-		ICalculatorToken m_Right;
+		BinaryOperator _operator;
+		CalculatorToken _left;		
+		CalculatorToken _right;
 
         #endregion
 
@@ -48,19 +45,19 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public ICalculatorToken Left
+		public CalculatorToken Left
 		{
-			get { return m_Left; }
-			set { m_Left = value; }
+			get { return _left; }
+			set { _left = value; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public ICalculatorToken Right
+		public CalculatorToken Right
 		{
-			get { return m_Right; }
-			set { m_Right = value; }
+			get { return _right; }
+			set { _right = value; }
 		}
 
         #endregion
@@ -68,35 +65,38 @@ namespace TinyParser
         #region Constructors
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="operator_"></param>
-		public CalculatorTokenBinaryOperator(Calculator calculator_, BinaryOperator operator_)
-			: base(calculator_)
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="operator_"></param>
+		public CalculatorTokenBinaryOperator(Calculator calculator, BinaryOperator operator_)
+			: base(calculator)
 		{
-			m_Operator = operator_;
+			_operator = operator_;
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public CalculatorTokenBinaryOperator(Calculator calculator_, XmlNode el_, SaveOption option_)
-			: base(calculator_)
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+		public CalculatorTokenBinaryOperator(Calculator calculator, XmlNode el, SaveOption option)
+			: base(calculator)
 		{
-			Load(el_, option_);
+			Load(el, option);
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public CalculatorTokenBinaryOperator(Calculator calculator_, BinaryReader br_, SaveOption option_)
-            : base(calculator_)
+        /// <param name="calculator"></param>
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public CalculatorTokenBinaryOperator(Calculator calculator, BinaryReader br, SaveOption option)
+            : base(calculator)
         {
-            Load(br_, option_);
+            Load(br, option);
         }
 
         #endregion
@@ -111,54 +111,54 @@ namespace TinyParser
 		{
 			float res;			
 
-			switch (m_Operator)
+			switch (_operator)
 			{
 				case BinaryOperator.Plus:
-					res = m_Left.Evaluate() + m_Right.Evaluate();
+					res = _left.Evaluate() + _right.Evaluate();
 					break;
 
 				case BinaryOperator.Minus:
-					res = m_Left.Evaluate() - m_Right.Evaluate();
+					res = _left.Evaluate() - _right.Evaluate();
 					break;
 
 				case BinaryOperator.Multiply:
-					res = m_Left.Evaluate() * m_Right.Evaluate();
+					res = _left.Evaluate() * _right.Evaluate();
 					break;
 
 				case BinaryOperator.Divide:
-					res = m_Left.Evaluate() / m_Right.Evaluate();
+					res = _left.Evaluate() / _right.Evaluate();
 					break;
 
 				case BinaryOperator.Equal:
-					res = System.Convert.ToSingle(m_Left.Evaluate() == m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() == _right.Evaluate());
 					break;
 
 				case BinaryOperator.Different:
-					res = System.Convert.ToSingle(m_Left.Evaluate() != m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() != _right.Evaluate());
 					break;
 
 				case BinaryOperator.Superior:
-					res = System.Convert.ToSingle(m_Left.Evaluate() > m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() > _right.Evaluate());
 					break;
 
 				case BinaryOperator.Inferior:
-					res = System.Convert.ToSingle(m_Left.Evaluate() < m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() < _right.Evaluate());
 					break;
 
 				case BinaryOperator.SupEqual:
-					res = System.Convert.ToSingle(m_Left.Evaluate() >= m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() >= _right.Evaluate());
 					break;
 
 				case BinaryOperator.InfEqual:
-					res = System.Convert.ToSingle(m_Left.Evaluate() <= m_Right.Evaluate());
+					res = Convert.ToSingle(_left.Evaluate() <= _right.Evaluate());
 					break;
 
 				case BinaryOperator.Or:
-					res = System.Convert.ToSingle(System.Convert.ToBoolean(m_Left.Evaluate()) || System.Convert.ToBoolean(m_Right.Evaluate()));
+					res = Convert.ToSingle(Convert.ToBoolean(_left.Evaluate()) || Convert.ToBoolean(_right.Evaluate()));
 					break;
 
 				case BinaryOperator.And:
-					res = System.Convert.ToSingle(System.Convert.ToBoolean(m_Left.Evaluate()) && System.Convert.ToBoolean(m_Right.Evaluate()));
+					res = Convert.ToSingle(Convert.ToBoolean(_left.Evaluate()) && Convert.ToBoolean(_right.Evaluate()));
 					break;
 
 				default:
@@ -173,64 +173,64 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Save(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Save(XmlNode el, SaveOption option)
 		{
-			XmlNode node = (XmlNode)el_.OwnerDocument.CreateElement("Node");
-			el_.AppendChild(node);
-			el_.OwnerDocument.AddAttribute(node, "type", ((int)CalculatorTokenType.BinaryOperator).ToString());
-			el_.OwnerDocument.AddAttribute(node, "operator", ((int)m_Operator).ToString());
+			XmlNode node = el.OwnerDocument.CreateElement("Node");
+			el.AppendChild(node);
+            node.AddAttribute("type", ((int)CalculatorTokenType.BinaryOperator).ToString());
+            node.AddAttribute("operator", ((int)_operator).ToString());
 
-			XmlNode child = (XmlNode)el_.OwnerDocument.CreateElement("Left");
+			XmlNode child = el.OwnerDocument.CreateElement("Left");
 			node.AppendChild(child);
-			m_Left.Save(child, option_);
+			_left.Save(child, option);
 
-			child = (XmlNode)el_.OwnerDocument.CreateElement("Right");
+			child = el.OwnerDocument.CreateElement("Right");
 			node.AppendChild(child);
-			m_Right.Save(child, option_);
+			_right.Save(child, option);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Load(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Load(XmlNode el, SaveOption option)
 		{
-			m_Operator = (BinaryOperator) int.Parse(el_.Attributes["operator"].Value);
+			_operator = (BinaryOperator) int.Parse(el.Attributes["operator"].Value);
 
-			XmlNode child = (XmlNode)el_.SelectSingleNode("Left/Node");
-			m_Left = Calculator.CreateCalculatorToken(Calculator, child, option_);
+			XmlNode child = (XmlNode)el.SelectSingleNode("Left/Node");
+			_left = Calculator.CreateCalculatorToken(Calculator, child, option);
 
-			child = (XmlNode)el_.SelectSingleNode("Right/Node");
-			m_Right = Calculator.CreateCalculatorToken(Calculator, child, option_);
+			child = (XmlNode)el.SelectSingleNode("Right/Node");
+			_right = Calculator.CreateCalculatorToken(Calculator, child, option);
 
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Save(BinaryWriter bw_, SaveOption option_)
+        /// <param name="bw"></param>
+        /// <param name="option"></param>
+        public override void Save(BinaryWriter bw, SaveOption option)
         {
-            bw_.Write((int)CalculatorTokenType.BinaryOperator);
-            bw_.Write((int)m_Operator);
-            m_Left.Save(bw_, option_);
-            m_Right.Save(bw_, option_);
+            bw.Write((int)CalculatorTokenType.BinaryOperator);
+            bw.Write((int)_operator);
+            _left.Save(bw, option);
+            _right.Save(bw, option);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Load(BinaryReader br_, SaveOption option_)
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public override void Load(BinaryReader br, SaveOption option)
         {
-            m_Operator = (BinaryOperator)br_.ReadInt32();
-            m_Left = Calculator.CreateCalculatorToken(Calculator, br_, option_);
-            m_Right = Calculator.CreateCalculatorToken(Calculator, br_, option_);
+            _operator = (BinaryOperator)br.ReadInt32();
+            _left = Calculator.CreateCalculatorToken(Calculator, br, option);
+            _right = Calculator.CreateCalculatorToken(Calculator, br, option);
         }
 
 		#endregion

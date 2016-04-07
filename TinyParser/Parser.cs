@@ -3,412 +3,376 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
 namespace TinyParser
 {
-	/// <summary>
+    /// <summary>
     /// Recognized operators : 
     /// +, -, /, *, ==, !=, >, &lt;, >=, &lt;=, ||, &&
     /// 
     /// Can support functions, format : function_name="arg1, arg2, ..."
     /// Can support keyword
-	/// </summary>
-	public class Parser
+    /// </summary>
+    public class Parser
     {
         #region Delegate
 
-        public delegate float EvaluateKeywordDelegate(string keyword_);
-        public delegate float EvaluateFunctionDelegate(string function_, string[] args_);
+        public delegate float EvaluateKeywordDelegate(string keyword);
+        public delegate float EvaluateFunctionDelegate(string function, string[] args);
 
         #endregion // Delegate
 
         #region Fields
 
-        EvaluateKeywordDelegate m_KeywordDelegate;
-        EvaluateFunctionDelegate m_FunctionDelegate;
+        public EvaluateKeywordDelegate KeywordDelegate { private get; set; }
+        public EvaluateFunctionDelegate FunctionDelegate { private get; set; }
 
-        Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator> m_MapBinaryOperator = new Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator>();
-		Dictionary<int, List<ParserToken>> m_Tokens = new Dictionary<int, List<ParserToken>>();
+        readonly Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator> _mapBinaryOperator = new Dictionary<string, CalculatorTokenBinaryOperator.BinaryOperator>();
+        private Dictionary<int, List<ParserToken>> _tokens = new Dictionary<int, List<ParserToken>>();
 
-		List<ICalculatorToken> m_CalculatorList = new List<ICalculatorToken>();
-		Calculator m_Calculator;
+        readonly List<CalculatorToken> _calculatorTokens = new List<CalculatorToken>();
+        readonly Calculator _calculator;
 
-		List<string> m_TokensValue = new List<string>();
+        readonly List<string> _tokensValue = new List<string>();
 
         #endregion
 
         #region Properties
 
-		/// <summary>
-		/// 
-		/// </summary>
-		internal TinyParser.Calculator Calculator
-		{
-			get { return m_Calculator; }
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        internal TinyParser.Calculator Calculator => _calculator;
 
-		/// <summary>
-		/// Gets
-		/// </summary>
-		internal string[] TokensValue
-		{
-			get { return m_TokensValue.ToArray(); }
-		}
+        /// <summary>
+        /// Gets
+        /// </summary>
+        internal string[] TokensValue => _tokensValue.ToArray();
 
         #endregion
 
         #region Constructors
 
-		/// <summary>
-		/// 
-		/// </summary>
-        public Parser(EvaluateKeywordDelegate keywordDelegate_, EvaluateFunctionDelegate functionDelegate_)
-		{
-            if (keywordDelegate_ == null)
-            {
-                throw new ArgumentNullException("The EvaluateKeywordDelegate is null");
-            }
+        public Parser()
+        {
+            _mapBinaryOperator.Add("+", CalculatorTokenBinaryOperator.BinaryOperator.Plus);
+            _mapBinaryOperator.Add("-", CalculatorTokenBinaryOperator.BinaryOperator.Minus);
+            _mapBinaryOperator.Add("/", CalculatorTokenBinaryOperator.BinaryOperator.Divide);
+            _mapBinaryOperator.Add("*", CalculatorTokenBinaryOperator.BinaryOperator.Multiply);
+            _mapBinaryOperator.Add("==", CalculatorTokenBinaryOperator.BinaryOperator.Equal);
+            _mapBinaryOperator.Add("!=", CalculatorTokenBinaryOperator.BinaryOperator.Different);
+            _mapBinaryOperator.Add(">=", CalculatorTokenBinaryOperator.BinaryOperator.SupEqual);
+            _mapBinaryOperator.Add("<=", CalculatorTokenBinaryOperator.BinaryOperator.InfEqual);
+            _mapBinaryOperator.Add(">", CalculatorTokenBinaryOperator.BinaryOperator.Superior);
+            _mapBinaryOperator.Add("<", CalculatorTokenBinaryOperator.BinaryOperator.Inferior);
+            _mapBinaryOperator.Add("||", CalculatorTokenBinaryOperator.BinaryOperator.Or);
+            _mapBinaryOperator.Add("&&", CalculatorTokenBinaryOperator.BinaryOperator.And);
 
-            if (functionDelegate_ == null)
-            {
-                throw new ArgumentNullException("The EvaluateFunctionDelegate is null");
-            }
-
-            m_KeywordDelegate = keywordDelegate_;
-            m_FunctionDelegate = functionDelegate_;
-
-			m_MapBinaryOperator.Add("+", CalculatorTokenBinaryOperator.BinaryOperator.Plus);
-			m_MapBinaryOperator.Add("-", CalculatorTokenBinaryOperator.BinaryOperator.Minus);
-			m_MapBinaryOperator.Add("/", CalculatorTokenBinaryOperator.BinaryOperator.Divide);
-			m_MapBinaryOperator.Add("*", CalculatorTokenBinaryOperator.BinaryOperator.Multiply);
-			m_MapBinaryOperator.Add("==", CalculatorTokenBinaryOperator.BinaryOperator.Equal);
-            m_MapBinaryOperator.Add("!=", CalculatorTokenBinaryOperator.BinaryOperator.Different);
-            m_MapBinaryOperator.Add(">=", CalculatorTokenBinaryOperator.BinaryOperator.SupEqual);
-            m_MapBinaryOperator.Add("<=", CalculatorTokenBinaryOperator.BinaryOperator.InfEqual);
-			m_MapBinaryOperator.Add(">", CalculatorTokenBinaryOperator.BinaryOperator.Superior);
-			m_MapBinaryOperator.Add("<", CalculatorTokenBinaryOperator.BinaryOperator.Inferior);
-			m_MapBinaryOperator.Add("||", CalculatorTokenBinaryOperator.BinaryOperator.Or);
-			m_MapBinaryOperator.Add("&&", CalculatorTokenBinaryOperator.BinaryOperator.And);
-
-			AddParserToken(new ParserTokenSequence(this), 1);
-			AddParserToken(new ParserTokenDelimiter(this, "(", ")"), 2);
-			AddParserToken(new ParserTokenBinaryOperator(this, "*"), 4);
-			AddParserToken(new ParserTokenBinaryOperator(this, "/"), 4);
-			AddParserToken(new ParserTokenBinaryOperator(this, "+"), 5);
+            AddParserToken(new ParserTokenSequence(this), 1);
+            AddParserToken(new ParserTokenDelimiter(this, "(", ")"), 2);
+            AddParserToken(new ParserTokenBinaryOperator(this, "*"), 4);
+            AddParserToken(new ParserTokenBinaryOperator(this, "/"), 4);
+            AddParserToken(new ParserTokenBinaryOperator(this, "+"), 5);
             AddParserToken(new ParserTokenBinaryOperator(this, "-"), 5);
             AddParserToken(new ParserTokenBinaryOperator(this, "<="), 6);
             AddParserToken(new ParserTokenBinaryOperator(this, ">="), 6);
-			AddParserToken(new ParserTokenBinaryOperator(this, "<"), 6);
-			AddParserToken(new ParserTokenBinaryOperator(this, ">"), 6);
-			AddParserToken(new ParserTokenBinaryOperator(this, "=="), 7);
-			AddParserToken(new ParserTokenBinaryOperator(this, "!="), 7);
-			//AddToken(new ParserTokenOperator(this, "^"), 8);
-			AddParserToken(new ParserTokenBinaryOperator(this, "&&"), 9);
-			AddParserToken(new ParserTokenBinaryOperator(this, "||"), 9);
-			//AddToken(new ParserTokenKeyword(this, ""), 10);
-			AddParserToken(new ParserTokenValue(this), 12);
+            AddParserToken(new ParserTokenBinaryOperator(this, "<"), 6);
+            AddParserToken(new ParserTokenBinaryOperator(this, ">"), 6);
+            AddParserToken(new ParserTokenBinaryOperator(this, "=="), 7);
+            AddParserToken(new ParserTokenBinaryOperator(this, "!="), 7);
+            //AddToken(new ParserTokenOperator(this, "^"), 8);
+            AddParserToken(new ParserTokenBinaryOperator(this, "&&"), 9);
+            AddParserToken(new ParserTokenBinaryOperator(this, "||"), 9);
+            //AddToken(new ParserTokenKeyword(this, ""), 10);
+            AddParserToken(new ParserTokenValue(this), 12);
 
-			m_Calculator = new Calculator(this);
-		}
+            _calculator = new Calculator(this);
+        }
 
         #endregion
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token_"></param>
-		/// <param name="priority_">Plus la valeur est petite plus la priorite est grande</param>
-		private void AddParserToken(ParserToken token_, int priority_)
-		{
-			if (m_Tokens.ContainsKey(priority_) == true)
-			{
-				m_Tokens[priority_].Add(token_);
-			}
-			else
-			{
-				List<ParserToken> list = new List<ParserToken>();
-				list.Add(token_);
-				m_Tokens.Add(priority_, list);
-			}
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="priority">Plus la valeur est petite plus la priorite est grande</param>
+        private void AddParserToken(ParserToken token, int priority)
+        {
+            if (_tokens.ContainsKey(priority) == true)
+            {
+                _tokens[priority].Add(token);
+            }
+            else
+            {
+                List<ParserToken> list = new List<ParserToken> { token };
+                _tokens.Add(priority, list);
+            }
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="keyword_"></param>
-		public void AddKeywordToken(string keyword_)
-		{
-			AddParserToken(new ParserTokenKeyword(this, keyword_), 11);
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword"></param>
+        public void AddKeywordToken(string keyword)
+        {
+            AddParserToken(new ParserTokenKeyword(this, keyword), 11);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="functionName_"></param>
-		public void AddFunctionToken(string functionName_)
-		{
-			AddParserToken(new ParserTokenFunction(this, functionName_), 10);
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="functionName"></param>
+        public void AddFunctionToken(string functionName)
+        {
+            AddParserToken(new ParserTokenFunction(this, functionName), 10);
+        }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sentence_"></param>
-		/// <returns></returns>
-		public bool Check(string sentence_)
-		{
-			sentence_ = sentence_.Trim();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <returns></returns>
+        public bool Check(string sentence)
+        {
+            sentence = sentence.Trim();
 
-			if (string.IsNullOrEmpty(sentence_) == true)
-			{
-				return false;
-			}
+            if (string.IsNullOrEmpty(sentence) == true)
+            {
+                return false;
+            }
 
-			//sort the dictionary by priority
-			m_Tokens = m_Tokens.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            //sort the dictionary by priority
+            _tokens = _tokens.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-			foreach (KeyValuePair<int, List<ParserToken>> pair in m_Tokens)
-			{
-				foreach (ParserToken token in pair.Value)
-				{
-					if (token.Check(sentence_) == true)
-					{
-						return true;
-					}
-				}
-			}
+            return _tokens.Any(pair => pair.Value.Any(token => token.Check(sentence) == true));
+        }
 
-			return false;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <returns></returns>
+        private bool Compile(string sentence)
+        {
+            _calculatorTokens.Clear();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sentence_"></param>
-		/// <returns></returns>
-		public bool Compile(string sentence_)
-		{
-			m_CalculatorList.Clear();
+            if (Check(sentence) == true)
+            {
+                CalculatorToken root;
+                CompileCalculatorToken(out root, 0);
 
-			if (Check(sentence_) == true)
-			{
-				ICalculatorToken root;
-				CompileCalculatorToken(out root, 0);
+                _calculator.Root = root;
+                return true;
+            }
 
-				m_Calculator.Root = root;
-				return true;
-			}
+            _calculatorTokens.Clear();
+            _calculator.Root = null;
 
-			m_CalculatorList.Clear();
-			m_Calculator.Root = null;
+            return false;
+        }
 
-			return false;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sentence"></param>
+        /// <returns></returns>
+        public float Evaluate(string sentence)
+        {
+            if (Compile(sentence) == true)
+            {
+                return _calculator.Evaluate();
+            }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sentence_"></param>
-		/// <returns></returns>
-		public float Evaluate(string sentence_)
-		{
-			if (Compile(sentence_) == true)
-			{
-				return m_Calculator.Evaluate();
-			}
+            throw new InvalidOperationException("Can't Compile!; Please check your sentence");
+        }
 
-			throw new InvalidOperationException("Can't Compile!; Please check your sentence");
-		}
-
-		/// <summary>
+        /// <summary>
         /// Used only a sentence is already compiled
-		/// </summary>
-		/// <returns></returns>
-		public float Evaluate()
-		{
-			if (m_Calculator.Root == null)
-			{
-				throw new InvalidOperationException("Compile before use Evaluate()");
-			}
-
-			return m_Calculator.Evaluate();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="keyword_"></param>
-		/// <returns></returns>
-        public float EvaluateKeyword(string keyword_)
-        {
-            return m_KeywordDelegate(keyword_);
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="functionName_"></param>
-		/// <param name="args_"></param>
-		/// <returns></returns>
-        public float EvaluateFunction(string functionName_, string[] args_)
-        {
-            return m_FunctionDelegate(functionName_, args_);
-        }
-
-		#region Compile
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token_"></param>
-		internal void AddToken(string token_)
-		{
-			m_TokensValue.Add(token_);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token_"></param>
-		/// <param name="index_"></param>
-		/// <returns></returns>
-		private int CompileCalculatorToken(out ICalculatorToken token_, int index_)
-		{
-			token_ = m_CalculatorList[index_];
-
-			if (token_ is CalculatorTokenBinaryOperator)
-			{
-				index_ = CompileBinaryOperator(token_ as CalculatorTokenBinaryOperator, index_ + 1);
-			}
-			else if (token_ is CalculatorTokenSequence)
-			{
-				ICalculatorToken res;
-				index_ = CompileSequence(token_ as CalculatorTokenSequence, out res, index_ + 1);
-				token_ = res;
-			}
-
-			return index_;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parent_"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		private int CompileBinaryOperator(CalculatorTokenBinaryOperator parent_, int index_)
-		{
-			ICalculatorToken left, right;
-			CompileCalculatorToken(out left, index_);
-			index_ = CompileCalculatorToken(out right, index_ + 1);
-
-			parent_.Left = left;
-			parent_.Right = right;
-
-			return index_ + 1;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="parent_"></param>
-		/// <param name="res_"></param>
-		/// <param name="index_"></param>
-		/// <returns>the index of the end of the sequence</returns>
-		private int CompileSequence(ICalculatorToken parent_, out ICalculatorToken res_, int index_)
-		{
-			CalculatorTokenSequence seq;
-			int end = -1;
-			res_ = null;
-
-			for (int i = index_; i < m_CalculatorList.Count; i++)
-			{
-				if (m_CalculatorList[i] is CalculatorTokenSequence)
-				{
-					seq = (CalculatorTokenSequence)m_CalculatorList[i];
-
-					if (seq.Sequence == CalculatorTokenSequence.TokenSequence.StartSequence)
-					{
-						end = CompileCalculatorToken(out res_, i + 1) + 1;
-						m_CalculatorList.RemoveRange(i, end - i);
-						return i;
-					}
-				}
-			}
-
-			return end;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token_"></param>
-		internal void AddCalculator(ICalculatorToken token_)
-		{
-			m_CalculatorList.Add(token_);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="operator_"></param>
-		/// <returns></returns>
-		internal ICalculatorToken GetCalculatorByBinaryOperator(string operator_)
-		{
-			return new CalculatorTokenBinaryOperator(m_Calculator, m_MapBinaryOperator[operator_]);
-		}
-
-		#endregion		
-
-		#region Save/Load
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public void Save(XmlNode el_, SaveOption option_)
-		{
-			m_Calculator.Save(el_, option_);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public void Load(XmlNode el_, SaveOption option_)
-		{
-			m_Calculator.Load(el_, option_);
-		}
-
-        /// <summary>
-        /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public void Save(BinaryWriter bw_, SaveOption option_)
+        /// <returns></returns>
+        public float Evaluate()
         {
-            m_Calculator.Save(bw_, option_);
+            if (_calculator.Root == null)
+            {
+                throw new InvalidOperationException("Compile before use Evaluate()");
+            }
+
+            return _calculator.Evaluate();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public void Load(BinaryReader br_, SaveOption option_)
+        /// <param name="keyword"></param>
+        /// <returns></returns>
+        public float EvaluateKeyword(string keyword)
         {
-            //m_Calculator.Load(br_, option_);
+            return KeywordDelegate(keyword);
         }
 
-		#endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="functionName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public float EvaluateFunction(string functionName, string[] args)
+        {
+            return FunctionDelegate(functionName, args);
+        }
 
-		#endregion
-	}
+        #region Compile
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        internal void AddToken(string token)
+        {
+            _tokensValue.Add(token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private int CompileCalculatorToken(out CalculatorToken token, int index)
+        {
+            token = _calculatorTokens[index];
+
+            if (token is CalculatorTokenBinaryOperator)
+            {
+                index = CompileBinaryOperator(token as CalculatorTokenBinaryOperator, index + 1);
+            }
+            else if (token is CalculatorTokenSequence)
+            {
+                CalculatorToken res;
+                index = CompileSequence(token as CalculatorTokenSequence, out res, index + 1);
+                token = res;
+            }
+
+            return index;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private int CompileBinaryOperator(CalculatorTokenBinaryOperator parent, int index)
+        {
+            CalculatorToken left, right;
+            CompileCalculatorToken(out left, index);
+            index = CompileCalculatorToken(out right, index + 1);
+
+            parent.Left = left;
+            parent.Right = right;
+
+            return index + 1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="res"></param>
+        /// <param name="index"></param>
+        /// <returns>the index of the end of the sequence</returns>
+        private int CompileSequence(CalculatorToken parent, out CalculatorToken res, int index)
+        {
+            int end = -1;
+            res = null;
+
+            for (int i = index; i < _calculatorTokens.Count; i++)
+            {
+                var token = _calculatorTokens[i] as CalculatorTokenSequence;
+                var seq = token;
+
+                if (seq?.Sequence != CalculatorTokenSequence.TokenSequence.StartSequence) continue;
+
+                end = CompileCalculatorToken(out res, i + 1) + 1;
+                _calculatorTokens.RemoveRange(i, end - i);
+
+                return i;
+            }
+
+            return end;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        internal void AddCalculator(CalculatorToken token)
+        {
+            _calculatorTokens.Add(token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operator_"></param>
+        /// <returns></returns>
+        internal CalculatorToken GetCalculatorByBinaryOperator(string operator_)
+        {
+            if (operator_ == null) throw new ArgumentNullException(nameof(operator_));
+
+            return new CalculatorTokenBinaryOperator(_calculator, _mapBinaryOperator[operator_]);
+        }
+
+        #endregion
+
+        #region Save/Load
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+        public void Save(XmlNode el, SaveOption option)
+        {
+            _calculator.Save(el, option);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+        public void Load(XmlNode el, SaveOption option)
+        {
+            _calculator.Load(el, option);
+        }
+
+        /// <summary>
+        /// s
+        /// </summary>
+        /// <param name="bw"></param>
+        /// <param name="option"></param>
+        public void Save(BinaryWriter bw, SaveOption option)
+        {
+            _calculator.Save(bw, option);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="el_"></param>
+        /// <param name="option"></param>
+        public void Load(BinaryReader br, SaveOption option)
+        {
+            //_calculator.Load(br_, option_);
+        }
+
+        #endregion
+
+        #endregion
+    }
 }

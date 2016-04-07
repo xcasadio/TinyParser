@@ -1,9 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Xml;
 
@@ -15,14 +11,14 @@ namespace TinyParser
 	public enum SaveOption
 	{
         /// <summary>
-        /// Save editor and game data
+        /// Save sentence and token tree
         /// </summary>
-		Editor,
+		Complete,
 
         /// <summary>
-        /// Save only game data
+        /// Save only the calculator tree
         /// </summary>
-		Game
+		Compact
 	}
 
 	/// <summary>
@@ -30,9 +26,9 @@ namespace TinyParser
 	/// </summary>
 	public interface ISaveLoad
 	{
-        void Save(BinaryWriter bw_, SaveOption option_);
-		void Save(XmlNode el_, SaveOption option_);
-        void Load(BinaryReader br_, SaveOption option_);
-		void Load(XmlNode el_, SaveOption option_);
+        void Save(BinaryWriter bw, SaveOption option);
+		void Save(XmlNode el, SaveOption option);
+        void Load(BinaryReader br, SaveOption option);
+		void Load(XmlNode el, SaveOption option);
 	}
 }

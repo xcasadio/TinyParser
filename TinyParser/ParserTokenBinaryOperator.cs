@@ -1,9 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TinyParser
 {
@@ -26,10 +23,10 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		/// <param name="token_"></param>
-		public ParserTokenBinaryOperator(Parser parser_, string token_)
-			: base(parser_, token_)
+		/// <param name="parser"></param>
+		/// <param name="token"></param>
+		public ParserTokenBinaryOperator(Parser parser, string token)
+			: base(parser, token)
 		{
 
 		}
@@ -41,19 +38,18 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="sentence_"></param>
+		/// <param name="sentence"></param>
 		/// <returns></returns>
-		public override bool Check(string sentence_)
+		public override bool Check(string sentence)
 		{
-			int index = sentence_.IndexOf(m_Token);
+			int index = sentence.IndexOf(Token, StringComparison.Ordinal);
 
 			if (index != -1)
 			{
-				Parser.AddCalculator(Parser.GetCalculatorByBinaryOperator(m_Token));
+				Parser.AddCalculator(Parser.GetCalculatorByBinaryOperator(Token));
 
-				string s1, s2;
-				s1 = sentence_.Substring(0, index);
-				s2 = sentence_.Substring(index + m_Token.Length, sentence_.Length - index - m_Token.Length);
+			    var s1 = sentence.Substring(0, index);
+				var s2 = sentence.Substring(index + Token.Length, sentence.Length - index - Token.Length);
 
 				return Parser.Check(s1) && Parser.Check(s2);
 			}

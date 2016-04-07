@@ -1,10 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace TinyParser
 {
 	class ParserTokenVariable
@@ -37,23 +32,23 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="sentence_"></param>
+		/// <param name="sentence"></param>
 		/// <returns></returns>
-		public override bool Check(string sentence_)
+		public override bool Check(string sentence)
 		{
-			if (string.IsNullOrEmpty(sentence_) == true)
+			if (string.IsNullOrEmpty(sentence) == true)
 			{
 				return true;
 			}
 
-			int c = (int)sentence_.ToCharArray(0, 1)[0];
+			int c = (int)sentence.ToCharArray(0, 1)[0];
 
 			if (c >= (int)'0' || c <= (int)'9')
 			{
 				return false;
 			}
 
-			m_Token = sentence_;
+			Token = sentence;
 
 			return true;
 		}

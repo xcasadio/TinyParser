@@ -1,9 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -13,11 +9,11 @@ namespace TinyParser
 	/// 
 	/// </summary>
 	class CalculatorTokenKeyword
-		: ICalculatorToken
+		: CalculatorToken
 	{
 		#region Fields
 
-		string m_Keyword;
+		string _keyword;
 
         #endregion
 
@@ -30,33 +26,35 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="keyword_"></param>
-		public CalculatorTokenKeyword(Calculator calculator_, string keyword_)
-			: base(calculator_)
+		/// <param name="keyword"></param>
+		public CalculatorTokenKeyword(Calculator calculator, string keyword)
+			: base(calculator)
 		{
-			m_Keyword = keyword_;
+			_keyword = keyword;
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public CalculatorTokenKeyword(Calculator calculator_, XmlNode el_, SaveOption option_)
-			: base(calculator_)
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+		public CalculatorTokenKeyword(Calculator calculator, XmlNode el, SaveOption option)
+			: base(calculator)
 		{
-			Load(el_, option_);
+			Load(el, option);
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public CalculatorTokenKeyword(Calculator calculator_, BinaryReader br_, SaveOption option_)
-            : base(calculator_)
+        /// <param name="calculator"></param>
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public CalculatorTokenKeyword(Calculator calculator, BinaryReader br, SaveOption option)
+            : base(calculator)
         {
-            Load(br_, option_);
+            Load(br, option);
         }
 
         #endregion
@@ -69,7 +67,7 @@ namespace TinyParser
 		/// <returns></returns>
 		public override float Evaluate()
 		{
-			return this.Calculator.Parser.EvaluateKeyword(m_Keyword);
+			return Calculator.Parser.EvaluateKeyword(_keyword);
 		}
 
 		#region Save / Load
@@ -77,47 +75,47 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Save(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Save(XmlNode el, SaveOption option)
 		{
-			XmlNode node = (XmlNode)el_.OwnerDocument.CreateElement("Node");
-			el_.AppendChild(node);
-			el_.OwnerDocument.AddAttribute(node, "type", ((int)CalculatorTokenType.Keyword).ToString());
-			XmlNode valueNode = el_.OwnerDocument.CreateNodeWithText("Keyword", m_Keyword);
+			XmlNode node = el.OwnerDocument.CreateElement("Node");
+			el.AppendChild(node);
+			node.AddAttribute("type", ((int)CalculatorTokenType.Keyword).ToString());
+			XmlNode valueNode = el.OwnerDocument.CreateElementWithText("Keyword", _keyword);
 			node.AppendChild(valueNode);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public override void Load(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public override void Load(XmlNode el, SaveOption option)
 		{
-			m_Keyword = el_.SelectSingleNode("Keyword").InnerText;
+			_keyword = el.SelectSingleNode("Keyword").InnerText;
 		}
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Save(BinaryWriter bw_, SaveOption option_)
+        /// <param name="bw"></param>
+        /// <param name="option"></param>
+        public override void Save(BinaryWriter bw, SaveOption option)
         {
-            bw_.Write((int)CalculatorTokenType.Keyword);
-            bw_.Write(m_Keyword);
+            bw.Write((int)CalculatorTokenType.Keyword);
+            bw.Write(_keyword);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public override void Load(BinaryReader br_, SaveOption option_)
+        /// <param name="br"></param>
+        /// <param name="option"></param>
+        public override void Load(BinaryReader br, SaveOption option)
         {
-            br_.ReadInt32();
-            m_Keyword = br_.ReadString();
+            br.ReadInt32();
+            _keyword = br.ReadString();
         }
 
 		#endregion

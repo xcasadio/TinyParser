@@ -1,10 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace TinyParser
 {
 	class ParserTokenValue
@@ -12,7 +7,7 @@ namespace TinyParser
 	{
 		#region Fields
 
-		float m_Value;
+		float _value;
 
         #endregion
 
@@ -25,9 +20,9 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		public ParserTokenValue(Parser parser_)
-			: base(parser_, string.Empty)
+		/// <param name="parser"></param>
+		public ParserTokenValue(Parser parser)
+			: base(parser, string.Empty)
 		{
 
 		}
@@ -39,28 +34,20 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="sentence_"></param>
+		/// <param name="sentence"></param>
 		/// <returns></returns>
-		public override bool Check(string sentence_)
+		public override bool Check(string sentence)
 		{
-            //int value;
-
-			if (string.IsNullOrEmpty(sentence_) == true)
+			if (string.IsNullOrEmpty(sentence))
 			{
 				return false;
 			}
 
-			if (float.TryParse(sentence_, out m_Value) == true)
-			{
-				Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, m_Value));
-			}
-            else
-			{
-				Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, sentence_));
-			}
+		    Parser.AddCalculator(float.TryParse(sentence, out _value) == true
+		        ? new CalculatorTokenValue(Parser.Calculator, _value)
+		        : new CalculatorTokenValue(Parser.Calculator, sentence));
 
-			m_Token = sentence_;
-			
+		    Token = sentence;
 
 			return true;
 		}

@@ -7,11 +7,14 @@
 **/Release*/**
 **/Editor Debug/**
 **/Editor Release/**
+packages/**
 *.csproj.*
 *.suo
 *.sdf
 *.opensdf
 *.ncb
+*.ncrunchproject
+*.ncrunchsolution
 
 # Compiled source #
 ###################

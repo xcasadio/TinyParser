@@ -1,9 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Xml;
 
@@ -21,12 +17,12 @@ namespace TinyParser
 	/// <summary>
 	/// 
 	/// </summary>
-	abstract class ICalculatorToken
+	abstract class CalculatorToken
 		: ISaveLoad
 	{
 		#region Fields
 
-		Calculator m_Calculator;
+	    readonly Calculator _calculator;
 
         #endregion
 
@@ -35,22 +31,19 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public TinyParser.Calculator Calculator
-		{
-			get { return m_Calculator; }
-		}
+		protected TinyParser.Calculator Calculator => _calculator;
 
-        #endregion
+	    #endregion
 
         #region Constructors
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="calculator_"></param>
-		protected ICalculatorToken(Calculator calculator_)
+		/// <param name="calculator"></param>
+		protected CalculatorToken(Calculator calculator)
 		{
-			m_Calculator = calculator_;
+			_calculator = calculator;
 		}
 
         #endregion
@@ -66,20 +59,20 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="keyword_"></param>
+		/// <param name="keyword"></param>
 		/// <returns></returns>
-		protected float EvaluateKeyword(string keyword_)
+		protected float EvaluateKeyword(string keyword)
 		{
-			return m_Calculator.Parser.EvaluateKeyword(keyword_);
+			return _calculator.Parser.EvaluateKeyword(keyword);
 		}
 
 		#region ISaveLoad Members
 
-		public abstract void Save(XmlNode el_, SaveOption option_);
-		public abstract void Load(XmlNode el_, SaveOption option_);
+		public abstract void Save(XmlNode el, SaveOption option);
+		public abstract void Load(XmlNode el, SaveOption option);
 
-        public abstract void Save(BinaryWriter bw_, SaveOption option_);
-        public abstract void Load(BinaryReader br_, SaveOption option_);
+        public abstract void Save(BinaryWriter bw, SaveOption option);
+        public abstract void Load(BinaryReader br, SaveOption option);
 
 		#endregion
 

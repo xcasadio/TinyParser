@@ -1,9 +1,6 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
 
@@ -16,41 +13,37 @@ namespace TinyParser
 	{
 		#region Fields
 
-		ICalculatorToken m_Root;
-        Parser m_Parser;
-		
-        #endregion
+	    private CalculatorToken _root;
+
+	    #endregion
 
         #region Properties
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public ICalculatorToken Root
+		public CalculatorToken Root
 		{
-			get { return m_Root; }
-			set { m_Root = value; }
+			get { return _root; }
+			set { _root = value; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public TinyParser.Parser Parser
-		{
-			get { return m_Parser; }
-		}
+		public TinyParser.Parser Parser { get; }
 
-        #endregion
+	    #endregion
 
         #region Constructors
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		public Calculator(Parser parser_)
+		/// <param name="parser"></param>
+		public Calculator(Parser parser)
 		{
-			m_Parser = parser_;
+			Parser = parser;
 		}
 
         #endregion
@@ -63,7 +56,7 @@ namespace TinyParser
 		/// <returns></returns>
 		public float Evaluate()
 		{
-			return m_Root.Evaluate();
+			return _root.Evaluate();
 		}
 
 		#region Save / Load
@@ -71,81 +64,74 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public void Load(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public void Load(XmlNode el, SaveOption option)
 		{
-			m_Root = null;
+			_root = null;
 
-			XmlNode root = (XmlNode) el_.SelectSingleNode("Root/Node");
+			XmlNode root = el.SelectSingleNode("Root/Node");
 
 			if (root != null)
 			{
-				m_Root = CreateCalculatorToken(this, root, option_);
+				_root = CreateCalculatorToken(this, root, option);
 			}
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		public void Save(XmlNode el_, SaveOption option_)
+		/// <param name="el"></param>
+		/// <param name="option"></param>
+		public void Save(XmlNode el, SaveOption option)
 		{
-			if (m_Root != null)
+			if (_root != null)
 			{
-				XmlNode node = el_.OwnerDocument.CreateElement("Root");
-				el_.AppendChild(node);
-				m_Root.Save((XmlNode)node, option_);
+				XmlNode node = el.OwnerDocument.CreateElement("Root");
+				el.AppendChild(node);
+				_root.Save(node, option);
 			}
 		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
-        public void Save(BinaryWriter bw_, SaveOption option_)
+        ///>
+        public void Save(BinaryWriter bw, SaveOption option)
         {
-            if (m_Root != null)
-            {
-                m_Root.Save(bw_, option_);
-            }
+            _root?.Save(bw, option);
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="token_"></param>
-		/// <param name="el_"></param>
-		/// <param name="option_"></param>
-		/// <returns></returns>
-		static public ICalculatorToken CreateCalculatorToken(Calculator calculator_, XmlNode el_, SaveOption option_)
+	    /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="calculator"></param>
+        /// <param name="el"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+	    public static CalculatorToken CreateCalculatorToken(Calculator calculator, XmlNode el, SaveOption option)
 		{
-			ICalculatorToken token = null;
+			CalculatorToken token;
 
-			CalculatorTokenType type = (CalculatorTokenType)int.Parse(el_.Attributes["type"].Value);
+			CalculatorTokenType type = (CalculatorTokenType)int.Parse(el.Attributes["type"].Value);
 
 			switch (type)
 			{
 				case CalculatorTokenType.BinaryOperator:
-					token = new CalculatorTokenBinaryOperator(calculator_, el_, option_);
+					token = new CalculatorTokenBinaryOperator(calculator, el, option);
 					break;
 
 				case CalculatorTokenType.Keyword:
-					token = new CalculatorTokenKeyword(calculator_, el_, option_);
+					token = new CalculatorTokenKeyword(calculator, el, option);
 					break;
 
 				/*case CalculatorTokenType.UnaryOperator:
-					token = new CalculatorTokenUnaryOperator(el_, option_);
+					token = new CalculatorTokenUnaryOperator(el, option);
 					break;*/
 
 				case CalculatorTokenType.Value:
-					token = new CalculatorTokenValue(calculator_, el_, option_);
+					token = new CalculatorTokenValue(calculator, el, option);
 					break;
 
 				case CalculatorTokenType.Function:
-					token = new CalculatorTokenFunction(calculator_, el_, option_);
+					token = new CalculatorTokenFunction(calculator, el, option);
 					break;
 
 				default:
@@ -158,36 +144,36 @@ namespace TinyParser
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="token_"></param>
-        /// <param name="el_"></param>
-        /// <param name="option_"></param>
+        /// <param name="calculator"></param>
+        /// <param name="br"></param>
+        /// <param name="option"></param>
         /// <returns></returns>
-        static public ICalculatorToken CreateCalculatorToken(Calculator calculator_, BinaryReader br_, SaveOption option_)
+        public static CalculatorToken CreateCalculatorToken(Calculator calculator, BinaryReader br, SaveOption option)
         {
-            ICalculatorToken token = null;
+            CalculatorToken token;
 
-            CalculatorTokenType type = (CalculatorTokenType)br_.ReadInt32();
+            CalculatorTokenType type = (CalculatorTokenType)br.ReadInt32();
 
             switch (type)
             {
                 case CalculatorTokenType.BinaryOperator:
-                    token = new CalculatorTokenBinaryOperator(calculator_, br_, option_);
+                    token = new CalculatorTokenBinaryOperator(calculator, br, option);
                     break;
 
                 case CalculatorTokenType.Keyword:
-                    token = new CalculatorTokenKeyword(calculator_, br_, option_);
+                    token = new CalculatorTokenKeyword(calculator, br, option);
                     break;
 
                 /*case CalculatorTokenType.UnaryOperator:
-                    token = new CalculatorTokenUnaryOperator(el_, option_);
+                    token = new CalculatorTokenUnaryOperator(el, option);
                     break;*/
 
                 case CalculatorTokenType.Value:
-                    token = new CalculatorTokenValue(calculator_, br_, option_);
+                    token = new CalculatorTokenValue(calculator, br, option);
                     break;
 
                 case CalculatorTokenType.Function:
-                    token = new CalculatorTokenFunction(calculator_, br_, option_);
+                    token = new CalculatorTokenFunction(calculator, br, option);
                     break;
 
                 default:

@@ -1,10 +1,5 @@
 ﻿// Licensed under the MIT license. See LICENSE file.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace TinyParser
 {
 	/// <summary>
@@ -15,9 +10,9 @@ namespace TinyParser
 	{
 		#region Fields
 
-		static public readonly string sequence = "`";
+	    public const string Sequence = "`";
 
-        #endregion
+	    #endregion
 
         #region Properties
 
@@ -28,9 +23,9 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parser_"></param>
-		public ParserTokenSequence(Parser parser_)
-			: base(parser_, sequence)
+		/// <param name="parser"></param>
+		public ParserTokenSequence(Parser parser)
+			: base(parser, Sequence)
 		{
 
 		}
@@ -42,11 +37,11 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="sentence_"></param>
+		/// <param name="sentence"></param>
 		/// <returns></returns>
-		public override bool Check(string sentence_)
+		public override bool Check(string sentence)
 		{
-			if (m_Token.Equals(sentence_) == true)
+			if (Token.Equals(sentence) == true)
 			{
 				Parser.AddCalculator(new CalculatorTokenSequence(Parser.Calculator, CalculatorTokenSequence.TokenSequence.Sequence));
 				return true;
