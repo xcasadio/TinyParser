@@ -15,6 +15,7 @@ packages/**
 *.ncb
 *.ncrunchproject
 *.ncrunchsolution
+**ncrunch**
 
 # Compiled source #
 ###################

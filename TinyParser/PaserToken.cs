@@ -18,7 +18,7 @@ namespace TinyParser
 		/// <summary>
 		/// Gets
 		/// </summary>
-		protected Parser Parser { get; }
+		protected Parser Parser { get; private set; }
 
         #endregion
 

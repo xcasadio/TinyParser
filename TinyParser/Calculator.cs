@@ -31,7 +31,7 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public TinyParser.Parser Parser { get; }
+		public TinyParser.Parser Parser { get; private set; }
 
 	    #endregion
 
@@ -96,7 +96,7 @@ namespace TinyParser
         ///>
         public void Save(BinaryWriter bw, SaveOption option)
         {
-            _root?.Save(bw, option);
+            _root.Save(bw, option);
         }
 
 	    /// <summary>

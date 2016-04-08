@@ -56,7 +56,16 @@ namespace TinyParserTest
         }
 
         [Test]
-        [TestCase(1.0f, "command == ctrlPunchLight")]
+        [TestCase(0.0f, "command=\"PunchLigh")]
+        public void Should_return_expected_when_evaluate_function_with_argument_wrong_formatted(float expected, string sentence)
+        {
+            _parser.FunctionDelegate = EvaluateFunction;
+            _parser.AddFunctionToken("command");
+            Check.That(expected).IsEqualTo(_parser.Evaluate(sentence));
+        }
+
+        [Test]
+        [TestCase(0.0f, "command == ctrlPunchLight")]
         public void Should_return_expected_when_evaluate_function_and_keyword(float expected, string sentence)
         {
             _parser.KeywordDelegate = EvaluateKeyword;
@@ -94,6 +103,25 @@ namespace TinyParserTest
             }
 
             return 0.0f;
+        }
+
+        [Test]
+        public void Should_return_false_when_sentence_is_null_or_empty()
+        {
+            Check.That(false).IsEqualTo(_parser.Check(string.Empty));
+            Check.That(false).IsEqualTo(_parser.Check(null));
+        }
+
+        [Test]
+        public void Should_return_false_when_sentence_is_right_formatted()
+        {
+            Check.That(true).IsEqualTo(_parser.Check("1"));
+        }
+
+        [Test]
+        public void Should_return_false_when_sentence_is_wrong_formatted()
+        {
+            Check.That(false).IsEqualTo(_parser.Check("1 &"));
         }
     }
 }

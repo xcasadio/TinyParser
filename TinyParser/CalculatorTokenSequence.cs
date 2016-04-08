@@ -31,7 +31,7 @@ namespace TinyParser
 		/// <summary>
 		/// 
 		/// </summary>
-		public TokenSequence Sequence { get; }
+		public TokenSequence Sequence { get; private set; }
 
 	    #endregion
 

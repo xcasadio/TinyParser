@@ -28,10 +28,13 @@ namespace TinyParser
 
         #region Properties
 
-		/// <summary>
-		/// 
-		/// </summary>
-		protected TinyParser.Calculator Calculator => _calculator;
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    protected TinyParser.Calculator Calculator
+	    {
+	        get { return _calculator; }
+	    }
 
 	    #endregion
 

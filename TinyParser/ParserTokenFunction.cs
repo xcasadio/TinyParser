@@ -41,37 +41,44 @@ namespace TinyParser
 		/// <returns></returns>
 		public override bool Check(string sentence)
 		{
-			if (sentence.StartsWith(Token) == true)
+			if (sentence.StartsWith(Token))
 			{
-				List<string> args = new List<string>();
-				string str = sentence.Replace(Token + "=", "");
-
-			    if (str.StartsWith("\"") == true)
-				{
-					str = str.Substring(1);
-
-					int index = str.IndexOf("\"", StringComparison.Ordinal);
-
-					if (index != -1)
-					{
-						string argument = str.Substring(0, index);
-                        args.AddRange(argument.Split(','));
-					}
-					else
-					{
-						//error
-						return false;
-					}
-				}
-
-				Parser.AddCalculator(new CalculatorTokenFunction(Parser.Calculator, Token, args.ToArray()));
-
-				return true;
+			    List<string> args;
+                if (GetArguments(sentence.Replace(Token + "=", ""), out args) == true)
+			    {
+                    Parser.AddCalculator(new CalculatorTokenFunction(Parser.Calculator, Token, args.ToArray()));
+                    return true;
+			    }
 			}
 
 			return false;
 		}
 
-        #endregion
+	    private bool GetArguments(string sentence, out List<string> args)
+	    {
+            args = new List<string>();
+
+            if (sentence.StartsWith("\""))
+            {
+                sentence = sentence.Substring(1);
+                int index = sentence.IndexOf("\"", StringComparison.Ordinal);
+
+                if (index != -1)
+                {
+                    string argument = sentence.Substring(0, index);
+                    args.AddRange(argument.Split(','));
+                }
+                else
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+	        return false;
+	    }
+
+	    #endregion
 	}
 }

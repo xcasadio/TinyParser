@@ -44,12 +44,18 @@ namespace TinyParser
         /// <summary>
         /// 
         /// </summary>
-        internal TinyParser.Calculator Calculator => _calculator;
+        internal TinyParser.Calculator Calculator
+	    {
+	        get { return _calculator; }
+	    }
 
         /// <summary>
         /// Gets
         /// </summary>
-        internal string[] TokensValue => _tokensValue.ToArray();
+        internal string[] TokensValue
+	    {
+	        get { return _tokensValue.ToArray(); }
+	    }
 
         #endregion
 
@@ -108,9 +114,11 @@ namespace TinyParser
             }
             else
             {
-                List<ParserToken> list = new List<ParserToken> { token };
-                _tokens.Add(priority, list);
+                _tokens.Add(priority, new List<ParserToken> { token });
             }
+
+            //sort the dictionary by priority
+            _tokens = _tokens.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         /// <summary>
@@ -138,16 +146,12 @@ namespace TinyParser
         /// <returns></returns>
         public bool Check(string sentence)
         {
-            sentence = sentence.Trim();
-
             if (string.IsNullOrEmpty(sentence) == true)
             {
                 return false;
             }
 
-            //sort the dictionary by priority
-            _tokens = _tokens.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
+            sentence = sentence.Trim();
             return _tokens.Any(pair => pair.Value.Any(token => token.Check(sentence) == true));
         }
 
@@ -295,7 +299,11 @@ namespace TinyParser
                 var token = _calculatorTokens[i] as CalculatorTokenSequence;
                 var seq = token;
 
-                if (seq?.Sequence != CalculatorTokenSequence.TokenSequence.StartSequence) continue;
+                if (seq != null
+                    && seq.Sequence != CalculatorTokenSequence.TokenSequence.StartSequence)
+                {
+                    continue;
+                }
 
                 end = CompileCalculatorToken(out res, i + 1) + 1;
                 _calculatorTokens.RemoveRange(i, end - i);
@@ -322,7 +330,7 @@ namespace TinyParser
         /// <returns></returns>
         internal CalculatorToken GetCalculatorByBinaryOperator(string operator_)
         {
-            if (operator_ == null) throw new ArgumentNullException(nameof(operator_));
+            if (operator_ == null) throw new ArgumentNullException("operator is null");
 
             return new CalculatorTokenBinaryOperator(_calculator, _mapBinaryOperator[operator_]);
         }

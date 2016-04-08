@@ -42,16 +42,36 @@ namespace TinyParser
 			{
 				return false;
 			}
-
-		    Parser.AddCalculator(float.TryParse(sentence, out _value) == true
-		        ? new CalculatorTokenValue(Parser.Calculator, _value)
-		        : new CalculatorTokenValue(Parser.Calculator, sentence));
+            else if (float.TryParse(sentence, out _value))
+            {
+                Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, _value));
+            }
+            else if (IsValidString(sentence))
+            {
+                Parser.AddCalculator(new CalculatorTokenValue(Parser.Calculator, sentence));
+            }
+            else
+            {
+                return false;
+            }
 
 		    Token = sentence;
 
 			return true;
 		}
 
-        #endregion
+	    private bool IsValidString(string sentence)
+	    {
+            if (string.IsNullOrEmpty(sentence)
+                || sentence.Trim().Contains(" ")
+                || char.IsLetter(sentence[0]) == false)
+	        {
+	            return false;
+            }
+
+	        return true;
+	    }
+
+	    #endregion
 	}
 }

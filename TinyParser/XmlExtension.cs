@@ -40,7 +40,7 @@ namespace TinyParser
             {
                 XmlAttribute att = xmlNode.OwnerDocument.CreateAttribute(attributeName);
                 att.Value = value;
-                xmlNode.Attributes?.Append(att);
+                if (xmlNode.Attributes != null) xmlNode.Attributes.Append(att);
             }
         }
 
